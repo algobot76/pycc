@@ -15,7 +15,7 @@ def main():
     print("main:")
     print(f"  mov ${numbers[0]}, %rax")
 
-    for i in range(0, len(operators)):
+    for i in range(len(operators)):
         if operators[i] == "+":
             print(f"  add ${numbers[i+1]}, %rax")
         elif operators[i] == "-":
