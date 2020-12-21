@@ -13,13 +13,13 @@ def main():
 
     print("  .globl main")
     print("main:")
-    print(f"  mov rax, {numbers[0]}")
+    print(f"  mov ${numbers[0]}, %rax")
 
     for i in range(0, len(operators)):
         if operators[i] == "+":
-            print(f"  add rax, {numbers[i+1]}")
+            print(f"  add ${numbers[i+1]}, %rax")
         elif operators[i] == "-":
-            print(f"  sub rax, {numbers[i+1]}")
+            print(f"  sub ${numbers[i+1]}, %rax")
         else:
             sys.stderr.write(f"unexpected character: {operators[i]}")
 
