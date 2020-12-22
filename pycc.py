@@ -22,6 +22,20 @@ class Token:
     len: int
 
 
+def equal(tok: Token, s: str) -> bool:
+    """Consumes the current token if it matches `s`.
+
+    Args:
+        tok: A token.
+        s: A string to be comapred with.
+
+    Returns:
+        A bool that indicates if the match exists.
+    """
+
+    pass
+
+
 def main():
     if len(sys.argv) != 2:
         sys.stderr.write(f"{sys.argv[0]} invalid number of arguments\n")
