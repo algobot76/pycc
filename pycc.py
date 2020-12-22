@@ -1,5 +1,25 @@
+from __future__ import annotations
+
 import re
 import sys
+from dataclasses import dataclass
+from enum import Enum, auto
+from typing import Any
+
+
+class TokenKind(Enum):
+    TK_RESERVED = auto()
+    TK_NUM = auto()
+    TK_EOF = auto()
+
+
+@dataclass
+class Token:
+    kind: TokenKind
+    next: Token
+    val: int
+    loc: Any
+    len: int
 
 
 def main():
