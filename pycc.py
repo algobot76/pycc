@@ -4,6 +4,7 @@ from __future__ import annotations
 import sys
 from dataclasses import dataclass
 from enum import Enum, auto
+from typing import Optional
 
 
 class TokenKind(Enum):
@@ -33,7 +34,7 @@ class Token:
     """
 
     kind: TokenKind
-    next: Token
+    next: Optional[Token]
     val: int
     loc: int
     len: int
@@ -47,7 +48,7 @@ def error(msg: str):
     """
 
     sys.stderr.write(f"{msg}\n")
-    exit(1)
+    sys.exit(1)
 
 
 def equal(tok: Token, prog: str, s: str) -> bool:
@@ -66,13 +67,13 @@ def equal(tok: Token, prog: str, s: str) -> bool:
         return False
 
     for i in range(tok.len):
-        if prog[i+tok.loc] != s[i]:
+        if prog[i + tok.loc] != s[i]:
             return False
 
     return True
 
 
-def skip(tok: Token, prog: str, s: str) -> Token:
+def skip(tok: Token, prog: str, s: str) -> Optional[Token]:
     """Ensures that the current token is `s`.
 
     Args:
@@ -85,7 +86,7 @@ def skip(tok: Token, prog: str, s: str) -> Token:
     """
 
     if not equal(tok, prog, s):
-        error(f"expected \'{s}\'")
+        error(f"expected '{s}'")
 
     return tok.next
 
@@ -117,10 +118,10 @@ def new_token(kind: TokenKind, start: int = 0, end: int = 0) -> Token:
         A new token constructed with the given paramters.
     """
 
-    return Token(kind, None, 0, start, end-start)
+    return Token(kind, None, 0, start, end - start)
 
 
-def tokenize(prog: str) -> Token:
+def tokenize(prog: str) -> Optional[Token]:
     """Tokenizes the `prog` and return new tokens.
 
     Args:
@@ -145,7 +146,7 @@ def tokenize(prog: str) -> Token:
             # Numerical literal
             cur.next = new_token(TokenKind.TK_NUM, idx, idx)
             old_idx = idx
-            num = ''
+            num = ""
             while ch.isdigit():
                 num += ch
                 idx += 1
@@ -154,14 +155,14 @@ def tokenize(prog: str) -> Token:
                 ch = prog[idx]
             cur.next.val = int(num)
             cur.next.len = idx - old_idx
-        elif ch == "+" or ch == "-":
+        elif ch in ("+", "-"):
             # Punctuator
-            cur.next = new_token(TokenKind.TK_RESERVED, idx, idx+1)
+            cur.next = new_token(TokenKind.TK_RESERVED, idx, idx + 1)
             idx += 1
         else:
             error("invalid token")
 
-        cur = cur.next
+        cur = cur.next  # type: ignore
 
     cur.next = new_token(TokenKind.TK_EOF)
     return head.next
@@ -175,14 +176,15 @@ def print_tokens(tok: Token):
     Args:
         tok: A token to start with.
     """
-    cur = tok
+    cur: Optional[Token] = tok
     while cur:
+        next_kind: Optional[TokenKind] = None
         if cur.next:
             next_kind = cur.next.kind
-        else:
-            next_kind = None
         print(
-            f"Token(kind={cur.kind}, next={next_kind}, val={cur.val}, loc={cur.loc}, len={cur.len})")
+            f"Token(kind={cur.kind}, next={next_kind}, val={cur.val}, "
+            f"loc={cur.loc}, len={cur.len})"
+        )
         cur = cur.next
 
 
@@ -202,7 +204,7 @@ def main():
 
     # ... followed by either `+ <number>` or `- <number>`.
     while tok.kind != TokenKind.TK_EOF:
-        if equal(tok, prog,  "+"):
+        if equal(tok, prog, "+"):
             print(f"  add ${get_number(tok.next)}, %rax")
             tok = tok.next.next
             continue
