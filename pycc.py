@@ -169,7 +169,7 @@ def tokenize(prog: str) -> Token:
 def print_tokens(tok: Token):
     """Prints the tokens.
 
-    This function is only used for debuging only.
+    This function is used for debugging only.
 
     Args:
         tok: A token to start with.
