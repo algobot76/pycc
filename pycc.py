@@ -67,7 +67,7 @@ def equal(tok: Token, prog: str, s: str) -> bool:
         return False
 
     for i in range(tok.len):
-        if prog[i] != s[i]:
+        if prog[i+tok.loc] != s[i]:
             return False
 
     return True
@@ -114,18 +114,31 @@ def tokenize(prog: str) -> Token:
     head = Token(TokenKind.TK_RESERVED, None, 0, 0, 0)  # Dummy
     cur = head
 
-    for (idx, ch) in enumerate(prog):
+    n = len(prog)
+    idx = 0
+    while idx < n:
+        ch = prog[idx]
         if ch.isspace():
-            # Skip whitespaces
+            # Skip spaces
+            idx += 1
             continue
-
-        if ch.isdigit():
-            # Numeric litreal
+        elif ch.isdigit():
+            # Numerical literal
             cur.next = new_token(TokenKind.TK_NUM, idx, idx)
-            cur.next.val = int(ch)
+            old_idx = idx
+            num = ''
+            while ch.isdigit():
+                num += ch
+                idx += 1
+                if idx == n:
+                    break
+                ch = prog[idx]
+            cur.next.val = int(num)
+            cur.next.len = idx - old_idx
         elif ch == "+" or ch == "-":
             # Punctuator
             cur.next = new_token(TokenKind.TK_RESERVED, idx, idx+1)
+            idx += 1
         else:
             error("invalid token")
 
@@ -171,12 +184,12 @@ def main():
     # ... followed by either `+ <number>` or `- <number>`.
     while tok.kind != TokenKind.TK_EOF:
         if equal(tok, prog,  "+"):
-            print(f" add ${get_number(tok.next)}, %rax")
+            print(f"  add ${get_number(tok.next)}, %rax")
             tok = tok.next.next
             continue
 
         tok = skip(tok, prog, "-")
-        print(f" sub ${get_number(tok)}, %rax")
+        print(f"  sub ${get_number(tok)}, %rax")
         tok = tok.next
 
     print("  ret")
