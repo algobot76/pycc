@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import re
 import sys
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Any
 
 
 class TokenKind(Enum):
