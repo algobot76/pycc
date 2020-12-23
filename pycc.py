@@ -107,10 +107,30 @@ def get_number(tok: Token) -> int:
 
 
 def new_token(kind: TokenKind, start: int = 0, end: int = 0) -> Token:
+    """Creates a new token.
+
+    Args:
+        kind: Token kind.
+        star: Start index of the token.
+        end: End index of the token.
+
+    Returns:
+        A new token constructed with the given paramters.
+    """
+
     return Token(kind, None, 0, start, end-start)
 
 
 def tokenize(prog: str) -> Token:
+    """Tokenizes the `prog` and return new tokens.
+
+    Args:
+        prog: The program to be tokenized.
+
+    Returns:
+        Tokens that represent the program.
+    """
+
     head = Token(TokenKind.TK_RESERVED, None, 0, 0, 0)  # Dummy
     cur = head
 
