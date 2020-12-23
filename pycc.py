@@ -135,6 +135,25 @@ def tokenize(prog: str) -> Token:
     return head.next
 
 
+def print_tokens(tok: Token):
+    """Prints the tokens.
+
+    This function is only used for debuging only.
+
+    Args:
+        tok: A token to start with.
+    """
+    cur = tok
+    while cur:
+        if cur.next:
+            next_kind = cur.next.kind
+        else:
+            next_kind = None
+        print(
+            f"Token(kind={cur.kind}, next={next_kind}, val={cur.val}, loc={cur.loc}, len={cur.len})")
+        cur = cur.next
+
+
 def main():
     if len(sys.argv) != 2:
         error(f"{sys.argv[0]} invalid number of arguments")
