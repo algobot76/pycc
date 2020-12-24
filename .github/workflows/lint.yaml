@@ -21,4 +21,4 @@ jobs:
           black --check --color --diff .
           isort --profile black --color --diff .
           mypy --ignore-missing-imports .
-          pylint pycc.py
+          pylint pycc
