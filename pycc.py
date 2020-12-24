@@ -51,7 +51,7 @@ def error(msg: str):
     sys.exit(1)
 
 
-def verror_at(pos: int, prog: str, msg: str) -> None:
+def verror_at(pos: int, prog: str, msg: str):
     """Writes the error at a specific place to stderr then exits.
 
     Args:
@@ -66,7 +66,7 @@ def verror_at(pos: int, prog: str, msg: str) -> None:
     sys.exit(1)
 
 
-def error_at(pos: int, prog: str, msg: str) -> None:
+def error_at(pos: int, prog: str, msg: str):
     """Spcifies a general error at a specific place to verror_at
 
     Args:
@@ -77,7 +77,7 @@ def error_at(pos: int, prog: str, msg: str) -> None:
     verror_at(pos, prog, msg)
 
 
-def error_tok(tok: Token, prog: str, msg: str) -> None:
+def error_tok(tok: Token, prog: str, msg: str):
     """Spcifies a error when consuming a token at a specific place to verror_at
 
     Args:
