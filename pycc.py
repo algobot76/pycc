@@ -51,6 +51,43 @@ def error(msg: str):
     sys.exit(1)
 
 
+def verror_at(pos: int, prog: str, msg: str) -> None:
+    """Writes the error at a specific place to stderr then exits.
+
+    Args:
+        pos: Position of where the error is
+        prog: The program where the error is
+        msg: An error message.
+    """
+    sys.stderr.write(f"{prog}\n")
+    sys.stderr.write(" " * pos)
+    sys.stderr.write("^ ")
+    sys.stderr.write(f"{msg}\n")
+    sys.exit(1)
+
+
+def error_at(pos: int, prog: str, msg: str) -> None:
+    """Spcifies a general error at a specific place to verror_at
+
+    Args:
+        pos: Position of where the error is
+        prog: The program where the error is
+        msg: An error message.
+    """
+    verror_at(pos, prog, msg)
+
+
+def error_tok(tok: Token, prog: str, msg: str) -> None:
+    """Spcifies a error when consuming a token at a specific place to verror_at
+
+    Args:
+        tok: The token
+        prog: The program where the error is
+        msg: An error message.
+    """
+    verror_at(tok.loc, prog, msg)
+
+
 def equal(tok: Token, prog: str, s: str) -> bool:
     """Consumes the current token if it matches `s`.
 
@@ -91,7 +128,7 @@ def skip(tok: Token, prog: str, s: str) -> Optional[Token]:
     return tok.next
 
 
-def get_number(tok: Token) -> int:
+def get_number(tok: Token, prog: str) -> int:
     """Ensures the current token is TK_NUM.
 
     Args:
@@ -102,7 +139,7 @@ def get_number(tok: Token) -> int:
     """
 
     if tok.kind is not TokenKind.TK_NUM:
-        error("expected a number")
+        error_tok(tok, prog, "expected a number")
     return tok.val
 
 
@@ -160,7 +197,7 @@ def tokenize(prog: str) -> Optional[Token]:
             cur.next = new_token(TokenKind.TK_RESERVED, idx, idx + 1)
             idx += 1
         else:
-            error("invalid token")
+            error_at(idx, prog, "invalid token")
 
         cur = cur.next  # type: ignore
 
@@ -199,18 +236,18 @@ def main():
     print("main:")
 
     # The first token must be a number.
-    print(f"  mov ${get_number(tok)}, %rax")
+    print(f"  mov ${get_number(tok, prog)}, %rax")
     tok = tok.next
 
     # ... followed by either `+ <number>` or `- <number>`.
     while tok.kind != TokenKind.TK_EOF:
         if equal(tok, prog, "+"):
-            print(f"  add ${get_number(tok.next)}, %rax")
+            print(f"  add ${get_number(tok.next, prog)}, %rax")
             tok = tok.next.next
             continue
 
         tok = skip(tok, prog, "-")
-        print(f"  sub ${get_number(tok)}, %rax")
+        print(f"  sub ${get_number(tok, prog)}, %rax")
         tok = tok.next
 
     print("  ret")
