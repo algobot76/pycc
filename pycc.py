@@ -201,7 +201,7 @@ def tokenize(prog: str) -> Optional[Token]:
 
         cur = cur.next  # type: ignore
 
-    cur.next = new_token(TokenKind.TK_EOF)
+    cur.next = new_token(TokenKind.TK_EOF, idx, idx)
     return head.next
 
 
