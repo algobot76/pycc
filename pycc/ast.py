@@ -3,7 +3,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Optional
+from typing import Optional, Tuple
+
+from pycc.error import error, error_tok
+from pycc.tokenizer import Tokenizer
+
+from .token import Token, TokenKind
 
 
 class NodeKind(Enum):
@@ -68,3 +73,97 @@ def new_num(val: int) -> Node:
     """
 
     return Node(NodeKind.ND_NUM, None, None, val)
+
+
+def primary(tok: Token, prog: str) -> Tuple[Node, Token]:
+    """Primary expression in parentheses
+
+    Args:
+        tok: Token to analyze
+        prog: Program
+
+    Returns:
+        A tuple
+            Node: Node of the current token
+            Token: Token for the next token
+    """
+
+    if Tokenizer.equal(tok, "("):
+        next_token: Optional[Token] = tok.next
+        if next_token is None:
+            raise error("Token should not have been none")
+
+        actual_next_token: Token = next_token
+
+        node, tok = expr(actual_next_token, prog)
+        rest = Tokenizer.skip(tok, ")")
+
+        if rest is None:
+            raise error("Rest should not have been none")
+        actual_rest_parent: Token = rest
+        return node, actual_rest_parent
+
+    if tok.kind == TokenKind.TK_NUM:
+        node = new_num(tok.val)
+        rest = tok.next
+        if rest is None:
+            raise error("Rest should not have been none")
+        actual_rest_num: Token = rest
+        return node, actual_rest_num
+
+    error_tok(tok, prog, "expected an expression")
+    return Node(NodeKind.ND_ADD, None, None, None), tok  # dummy return for mypy
+
+
+def mul(tok: Token, prog: str) -> Tuple[Node, Token]:
+    """Multiplication expression node constructor
+
+    Args:
+        tok: Token to analyze
+        prog: Program to analyze
+
+    Returns:
+        A tuple
+            Node: Node of the current token
+            Token: Token for the next token
+    """
+    node, tok = primary(tok, prog)
+
+    while True:
+        if Tokenizer.equal(tok, "/"):
+            pri_node, tok = primary(tok.next, prog)
+            node = new_binary(NodeKind.ND_DIV, node, pri_node)
+            continue
+        if Tokenizer.equal(tok, "*"):
+            pri_node, tok = primary(tok.next, prog)
+            node = new_binary(NodeKind.ND_MUL, node, pri_node)
+            continue
+
+        rest = tok
+        return node, rest
+
+
+def expr(tok: Token, prog: str) -> Tuple[Node, Token]:
+    """Expression node constructor
+
+    Args:
+        tok: Token to analyze
+        prog: Program to analyze
+
+    Returns:
+        A tuple
+            Node: Node of the current token
+            Token: Token for the next token
+    """
+    node, tok = mul(tok, prog)
+    while True:
+        if Tokenizer.equal(tok, "+"):
+            mul_node, tok = mul(tok.next, prog)
+            node = new_binary(NodeKind.ND_ADD, node, mul_node)
+            continue
+        if Tokenizer.equal(tok, "-"):
+            mul_node, tok = mul(tok.next, prog)
+            node = new_binary(NodeKind.ND_SUB, node, mul_node)
+            continue
+        rest = tok
+        return node, rest

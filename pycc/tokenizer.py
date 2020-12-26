@@ -1,4 +1,5 @@
 """Pycc tokenizer"""
+import string
 from typing import Optional
 
 from pycc.error import error, error_at, error_tok
@@ -53,7 +54,7 @@ class Tokenizer:
                     ch = cls._prog[idx]
                 cur.next.val = int(num)
                 cur.next.len = idx - old_idx
-            elif ch in ("+", "-"):
+            elif ch in string.punctuation:
                 # Punctuator
                 cur.next = new_token(TokenKind.TK_RESERVED, idx, idx + 1)
                 idx += 1
