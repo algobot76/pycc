@@ -5,8 +5,9 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Optional, Tuple
 
-from pycc.error import error, error_tok
+from pycc.error import error_tok
 from pycc.tokenizer import Tokenizer
+from pycc.utils import unwrap_optional
 
 from .token import Token, TokenKind
 
@@ -89,27 +90,15 @@ def primary(tok: Token, prog: str) -> Tuple[Node, Token]:
     """
 
     if Tokenizer.equal(tok, "("):
-        next_token: Optional[Token] = tok.next
-        if next_token is None:
-            raise error("Token should not have been none")
-
-        actual_next_token: Token = next_token
-
-        node, tok = expr(actual_next_token, prog)
-        rest = Tokenizer.skip(tok, ")")
-
-        if rest is None:
-            raise error("Rest should not have been none")
-        actual_rest_parent: Token = rest
-        return node, actual_rest_parent
+        next_token = unwrap_optional(tok.next)
+        node, tok = expr(next_token, prog)
+        rest = unwrap_optional(Tokenizer.skip(tok, ")"))
+        return node, rest
 
     if tok.kind == TokenKind.TK_NUM:
         node = new_num(tok.val)
-        rest = tok.next
-        if rest is None:
-            raise error("Rest should not have been none")
-        actual_rest_num: Token = rest
-        return node, actual_rest_num
+        rest = unwrap_optional(tok.next)
+        return node, rest
 
     error_tok(tok, prog, "expected an expression")
     return Node(NodeKind.ND_ADD, None, None, None), tok  # dummy return for mypy
@@ -131,11 +120,11 @@ def mul(tok: Token, prog: str) -> Tuple[Node, Token]:
 
     while True:
         if Tokenizer.equal(tok, "/"):
-            pri_node, tok = primary(tok.next, prog)
+            pri_node, tok = primary(unwrap_optional(tok.next), prog)
             node = new_binary(NodeKind.ND_DIV, node, pri_node)
             continue
         if Tokenizer.equal(tok, "*"):
-            pri_node, tok = primary(tok.next, prog)
+            pri_node, tok = primary(unwrap_optional(tok.next), prog)
             node = new_binary(NodeKind.ND_MUL, node, pri_node)
             continue
 
@@ -158,11 +147,11 @@ def expr(tok: Token, prog: str) -> Tuple[Node, Token]:
     node, tok = mul(tok, prog)
     while True:
         if Tokenizer.equal(tok, "+"):
-            mul_node, tok = mul(tok.next, prog)
+            mul_node, tok = mul(unwrap_optional(tok.next), prog)
             node = new_binary(NodeKind.ND_ADD, node, mul_node)
             continue
         if Tokenizer.equal(tok, "-"):
-            mul_node, tok = mul(tok.next, prog)
+            mul_node, tok = mul(unwrap_optional(tok.next), prog)
             node = new_binary(NodeKind.ND_SUB, node, mul_node)
             continue
         rest = tok

@@ -1,6 +1,7 @@
 """Pycc code generator"""
 from pycc.ast import Node, NodeKind
 from pycc.error import error
+from pycc.utils import unwrap_optional
 
 
 class CodeGenerator:
@@ -20,9 +21,9 @@ class CodeGenerator:
             print(f"  mov ${node.val}, %rax")
             return
 
-        CodeGenerator.gen_expr(node.rhs)
+        CodeGenerator.gen_expr(unwrap_optional(node.rhs))
         CodeGenerator.push()
-        CodeGenerator.gen_expr(node.lhs)
+        CodeGenerator.gen_expr(unwrap_optional(node.lhs))
         CodeGenerator.pop("%rdi")
 
         if node.kind == NodeKind.ND_ADD:
