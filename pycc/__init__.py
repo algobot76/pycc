@@ -14,10 +14,10 @@ def main(argv):
 
     prog = argv[1]
     tok: Token = Tokenizer.tokenize(prog)
-    node, tok = Parser.expr(tok, prog)
+    node = Parser.expr(tok, prog)
 
-    if tok.kind != TokenKind.TK_EOF:
-        error_tok(tok, prog, "extra token")
+    if Parser.rest.kind != TokenKind.TK_EOF:
+        error_tok(Parser.rest, prog, "extra token")
 
     print("  .globl main")
     print("main:")
