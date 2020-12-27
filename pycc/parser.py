@@ -18,7 +18,7 @@ class Parser:
     _prog: str = ""
 
     def __init__(self):
-        raise Exception("You cannot create an instance of Tokenizer")
+        raise Exception("You cannot create an instance of Parser")
 
     @classmethod
     def primary(cls, tok: Token) -> Tuple[Node, Token]:
