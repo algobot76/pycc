@@ -15,8 +15,13 @@ class Parser:
     an exception.
     """
 
+    _prog: str = ""
+
+    def __init__(self):
+        raise Exception("You cannot create an instance of Tokenizer")
+
     @classmethod
-    def primary(cls, tok: Token, prog: str) -> Tuple[Node, Token]:
+    def primary(cls, tok: Token) -> Tuple[Node, Token]:
         """Primary expression in parentheses.
 
         Args:
@@ -31,7 +36,7 @@ class Parser:
 
         if Tokenizer.equal(tok, "("):
             next_tok = unwrap_optional(tok.next)
-            node, tok = cls.expr(next_tok, prog)
+            node, tok = cls.expr(next_tok, cls._prog)
             rest = unwrap_optional(Tokenizer.skip(tok, ")"))
             return node, rest
 
@@ -40,11 +45,11 @@ class Parser:
             rest = unwrap_optional(tok.next)
             return node, rest
 
-        error_tok(tok, prog, "expected an expression")
+        error_tok(tok, cls._prog, "expected an expression")
         return Node(NodeKind.ND_ADD, None, None, 0), tok  # dummy return
 
     @classmethod
-    def mul(cls, tok: Token, prog: str) -> Tuple[Node, Token]:
+    def mul(cls, tok: Token) -> Tuple[Node, Token]:
         """Multiplication expression node constructor.
 
         Args:
@@ -56,15 +61,15 @@ class Parser:
                 Node: Node of the current token.
                 Token: Token for the next token.
         """
-        node, tok = cls.primary(tok, prog)
+        node, tok = cls.primary(tok)
 
         while True:
             if Tokenizer.equal(tok, "/"):
-                pri_node, tok = cls.primary(unwrap_optional(tok.next), prog)
+                pri_node, tok = cls.primary(unwrap_optional(tok.next))
                 node = new_binary(NodeKind.ND_DIV, node, pri_node)
                 continue
             if Tokenizer.equal(tok, "*"):
-                pri_node, tok = cls.primary(unwrap_optional(tok.next), prog)
+                pri_node, tok = cls.primary(unwrap_optional(tok.next))
                 node = new_binary(NodeKind.ND_MUL, node, pri_node)
                 continue
 
@@ -84,14 +89,16 @@ class Parser:
                 Node: Node of the current token.
                 Token: Token for the next token.
         """
-        node, tok = cls.mul(tok, prog)
+        cls._prog = prog
+
+        node, tok = cls.mul(tok)
         while True:
             if Tokenizer.equal(tok, "+"):
-                mul_node, tok = cls.mul(unwrap_optional(tok.next), prog)
+                mul_node, tok = cls.mul(unwrap_optional(tok.next))
                 node = new_binary(NodeKind.ND_ADD, node, mul_node)
                 continue
             if Tokenizer.equal(tok, "-"):
-                mul_node, tok = cls.mul(unwrap_optional(tok.next), prog)
+                mul_node, tok = cls.mul(unwrap_optional(tok.next))
                 node = new_binary(NodeKind.ND_SUB, node, mul_node)
                 continue
             rest = tok
