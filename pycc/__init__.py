@@ -1,8 +1,10 @@
 """Pycc"""
 import sys
 
-from pycc.error import error
-from pycc.token import TokenKind
+from pycc.codegen import CodeGen
+from pycc.error import error, error_tok
+from pycc.parser import Parser
+from pycc.token import Token, TokenKind
 from pycc.tokenizer import Tokenizer
 
 
@@ -11,27 +13,19 @@ def main(argv):
         error(f"{argv[0]} invalid number of arguments")
 
     prog = argv[1]
-    tok = Tokenizer.tokenize(prog)
+    tok: Token = Tokenizer.tokenize(prog)
+    node = Parser.expr(tok, prog)
+
+    if Parser.rest.kind != TokenKind.TK_EOF:
+        error_tok(Parser.rest, prog, "extra token")
 
     print("  .globl main")
     print("main:")
 
-    # The first token must be a number.
-    print(f"  mov ${Tokenizer.get_number(tok)}, %rax")
-    tok = tok.next
-
-    # ... followed by either `+ <number>` or `- <number>`.
-    while tok.kind != TokenKind.TK_EOF:
-        if Tokenizer.equal(tok, "+"):
-            print(f"  add ${Tokenizer.get_number(tok.next)}, %rax")
-            tok = tok.next.next
-            continue
-
-        tok = Tokenizer.skip(tok, "-")
-        print(f"  sub ${Tokenizer.get_number(tok)}, %rax")
-        tok = tok.next
-
+    CodeGen.gen_expr(node)
     print("  ret")
+
+    assert CodeGen.depth == 0
 
 
 def run_main():
