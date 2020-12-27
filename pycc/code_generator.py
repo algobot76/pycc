@@ -15,16 +15,16 @@ class CodeGenerator:
     def __init__(self):
         raise Exception("You cannot create an instance of CodeGenerator")
 
-    @staticmethod
-    def gen_expr(node: Node):
+    @classmethod
+    def gen_expr(cls, node: Node):
         if node.kind == NodeKind.ND_NUM:
             print(f"  mov ${node.val}, %rax")
             return
 
-        CodeGenerator.gen_expr(unwrap_optional(node.rhs))
-        CodeGenerator.push()
-        CodeGenerator.gen_expr(unwrap_optional(node.lhs))
-        CodeGenerator.pop("%rdi")
+        cls.gen_expr(unwrap_optional(node.rhs))
+        cls.push()
+        cls.gen_expr(unwrap_optional(node.lhs))
+        cls.pop("%rdi")
 
         if node.kind == NodeKind.ND_ADD:
             print("  add %rdi, %rax")
@@ -38,12 +38,12 @@ class CodeGenerator:
         else:
             error("invalid expression")
 
-    @staticmethod
-    def push():
+    @classmethod
+    def push(cls):
         print("  push %rax")
-        CodeGenerator.depth += 1
+        cls.depth += 1
 
-    @staticmethod
-    def pop(arg: str):
+    @classmethod
+    def pop(cls, arg: str):
         print(f"  pop {arg}")
-        CodeGenerator.depth -= 1
+        cls.depth -= 1

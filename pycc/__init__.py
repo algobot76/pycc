@@ -1,5 +1,4 @@
 """Pycc"""
-import pdb
 import sys
 
 from pycc.ast import expr
