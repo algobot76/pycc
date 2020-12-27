@@ -7,7 +7,7 @@ from pycc.utils import unwrap_optional
 class CodeGen:
     """Pycc code generator.
 
-    The code generator is a singleton for generating code expressions
+    The code generator is a singleton for generating code expressions.
     """
 
     depth: int = 0

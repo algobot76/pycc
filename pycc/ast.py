@@ -7,7 +7,7 @@ from typing import Optional
 
 
 class NodeKind(Enum):
-    """Represents a node kind
+    """Represents a node kind.
 
     Attributes:
         ND_ADD: +
@@ -26,13 +26,13 @@ class NodeKind(Enum):
 
 @dataclass
 class Node:
-    """Represents a node
+    """Represents a node.
 
     Attributes:
-        kind: Node kind
-        lhs: Left hand side of the node
-        rhs: Right hand side of the node
-        val: Int value of the node
+        kind: Node kind.
+        lhs: Left hand side of the node.
+        rhs: Right hand side of the node.
+        val: Int value of the node.
     """
 
     kind: NodeKind
@@ -45,13 +45,13 @@ def new_binary(kind: NodeKind, lhs: Node, rhs: Node) -> Node:
     """Creates a new node without a value.
 
     Args:
-        kind: NodeKind
-        lhs: Left hand side Node
-        rhs: Right hand side Node
-        val: Value of node
+        kind: NodeKind.
+        lhs: Left hand side Node.
+        rhs: Right hand side Node.
+        val: Value of node.
 
     Returns:
-        A new node with the given parameters
+        A new node with the given parameters.
     """
 
     return Node(kind, lhs, rhs, 0)
@@ -61,10 +61,10 @@ def new_num(val: int) -> Node:
     """Creates a new node with a value.
 
     Args:
-        val: Node value
+        val: Node value.
 
     Returns:
-        A new node with the value
+        A new node with the value.
     """
 
     return Node(NodeKind.ND_NUM, None, None, val)

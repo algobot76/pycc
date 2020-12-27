@@ -5,13 +5,13 @@ T = TypeVar("T")
 
 
 def unwrap_optional(value: Optional[T]) -> T:
-    """Unwraps the optional type and returns new type if type is not None
+    """Unwraps the optional type and returns new type if type is not None.
 
     Args:
-        value: value to be unwrapped
+        value: value to be unwrapped.
 
     Retrns:
-        Unwrapped value
+        Unwrapped value.
     """
 
     if value is None:
