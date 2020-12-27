@@ -4,7 +4,7 @@ from pycc.error import error
 from pycc.utils import unwrap_optional
 
 
-class CodeGenerator:
+class CodeGen:
     """Pycc code generator.
 
     The code generator is a singleton for generating code expressions
@@ -13,7 +13,7 @@ class CodeGenerator:
     depth: int = 0
 
     def __init__(self):
-        raise Exception("You cannot create an instance of CodeGenerator")
+        raise Exception("You cannot create an instance of CodeGen")
 
     @classmethod
     def gen_expr(cls, node: Node):
