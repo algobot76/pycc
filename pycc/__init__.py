@@ -2,7 +2,7 @@
 import sys
 
 from pycc.codegen import CodeGen
-from pycc.error import error, error_tok
+from pycc.error import PyccError, error, error_tok
 from pycc.parser import Parser
 from pycc.token import Token, TokenKind
 from pycc.tokenizer import Tokenizer
@@ -29,7 +29,10 @@ def main(argv):
 
 
 def run_main():
-    main(sys.argv)
+    try:
+        main(sys.argv)
+    except PyccError as e:
+        error(e)
 
 
 if __name__ == "__main__":

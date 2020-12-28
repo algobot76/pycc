@@ -4,6 +4,41 @@ import sys
 from pycc.token import Token
 
 
+class PyccError(Exception):
+    """Base class for Pycc exceptions."""
+
+
+class GeneralError(PyccError):
+    # pylint: disable=super-init-not-called
+    def __init__(self, pos: int, prog: str, msg: str):
+        self.pos = pos
+        self.prog = prog
+        self.msg = msg
+
+    def __str__(self):
+        return verror_msg(self.pos, self.prog, self.msg)
+
+
+class TokenError(PyccError):
+    # pylint: disable=super-init-not-called
+    def __init__(self, tok: Token, prog: str, msg: str):
+        self.tok = tok
+        self.prog = prog
+        self.msg = msg
+
+    def __str__(self):
+        return verror_msg(self.tok.loc, self.prog, self.msg)
+
+
+def verror_msg(pos: int, prog: str, msg: str) -> str:
+    result = f"{prog}\n"
+    result += " " * pos
+    result += "^ "
+    result += f"{msg}"
+
+    return result
+
+
 def error(msg: str):
     """Writes the error message to stderr then exits.
 
@@ -11,21 +46,6 @@ def error(msg: str):
         msg: An error message.
     """
 
-    sys.stderr.write(f"{msg}\n")
-    sys.exit(1)
-
-
-def verror_at(pos: int, prog: str, msg: str):
-    """Writes the error at a specific place to stderr then exits.
-
-    Args:
-        pos: Position of where the error is
-        prog: The program where the error is
-        msg: An error message.
-    """
-    sys.stderr.write(f"{prog}\n")
-    sys.stderr.write(" " * pos)
-    sys.stderr.write("^ ")
     sys.stderr.write(f"{msg}\n")
     sys.exit(1)
 
@@ -38,7 +58,7 @@ def error_at(pos: int, prog: str, msg: str):
         prog: The program where the error is
         msg: An error message.
     """
-    verror_at(pos, prog, msg)
+    raise GeneralError(pos, prog, msg)
 
 
 def error_tok(tok: Token, prog: str, msg: str):
@@ -49,4 +69,4 @@ def error_tok(tok: Token, prog: str, msg: str):
         prog: The program where the error is
         msg: An error message.
     """
-    verror_at(tok.loc, prog, msg)
+    raise TokenError(tok, prog, msg)
