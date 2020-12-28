@@ -50,6 +50,14 @@ class TokenError(PyccError):
 
 
 def verror_msg(pos: int, prog: str, msg: str) -> str:
+    """Returns the formatted error message for the given paramters.
+
+    Args:
+        pos: Position of where the error is.
+        prog: The program where the error is.
+        msg: An error message.
+    """
+
     result = f"{prog}\n"
     result += " " * pos
     result += "^ "
