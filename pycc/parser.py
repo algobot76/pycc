@@ -1,6 +1,6 @@
 """Pycc parser"""
 from pycc.ast import Node, NodeKind, new_binary, new_num
-from pycc.error import error_tok
+from pycc.error import TokenError
 from pycc.token import Token, TokenKind
 from pycc.tokenizer import Tokenizer
 from pycc.utils import unwrap_optional
@@ -41,8 +41,7 @@ class Parser:
             cls.rest = unwrap_optional(tok.next)
             return node
 
-        error_tok(tok, cls._prog, "expected an expression")
-        return Node(NodeKind.ND_ADD, None, None, 0)  # dummy return for mypy
+        raise TokenError(tok, cls._prog, "expected an expression")
 
     @classmethod
     def mul(cls, tok: Token) -> Node:
