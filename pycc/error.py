@@ -32,7 +32,6 @@ class TokenError(PyccError):
 
     Raise this exception if a token-related error occurs.
 
-
     Attributes:
         tok: The token.
         prog: The program where the error is.
