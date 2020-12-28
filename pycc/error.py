@@ -1,6 +1,4 @@
-"""Pycc error handling"""
-import sys
-
+"""Pycc custom exceptions"""
 from pycc.token import Token
 
 
@@ -63,14 +61,3 @@ def verror_msg(pos: int, prog: str, msg: str) -> str:
     result += f"{msg}"
 
     return result
-
-
-def error(msg: str):
-    """Writes the error message to stderr then exits.
-
-    Args:
-        msg: An error message.
-    """
-
-    sys.stderr.write(f"{msg}\n")
-    sys.exit(1)

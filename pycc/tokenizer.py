@@ -2,7 +2,7 @@
 import string
 from typing import Optional
 
-from pycc.error import GeneralError, TokenError, error
+from pycc.error import GeneralError, PyccError, TokenError
 from pycc.token import Token, TokenKind, new_token
 
 
@@ -101,7 +101,7 @@ class Tokenizer:
         """
 
         if not cls.equal(tok, s):
-            error(f"expected '{s}'")
+            raise PyccError(f"expected '{s}'")
 
         return tok.next
 

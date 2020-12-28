@@ -1,6 +1,6 @@
 """Pycc code generator"""
 from pycc.ast import Node, NodeKind
-from pycc.error import error
+from pycc.error import PyccError
 from pycc.utils import unwrap_optional
 
 
@@ -36,7 +36,7 @@ class CodeGen:
             print("  cqo")
             print("  idiv %rdi")
         else:
-            error("invalid expression")
+            raise PyccError("invalid expression")
 
     @classmethod
     def push(cls):

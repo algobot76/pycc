@@ -2,7 +2,7 @@
 import sys
 
 from pycc.codegen import CodeGen
-from pycc.error import PyccError, TokenError, error
+from pycc.error import PyccError, TokenError
 from pycc.parser import Parser
 from pycc.token import Token, TokenKind
 from pycc.tokenizer import Tokenizer
@@ -10,7 +10,7 @@ from pycc.tokenizer import Tokenizer
 
 def main(argv):
     if len(argv) != 2:
-        error(f"{argv[0]} invalid number of arguments")
+        raise PyccError(f"{argv[0]} invalid number of arguments")
 
     prog = argv[1]
     tok: Token = Tokenizer.tokenize(prog)
@@ -32,7 +32,8 @@ def run_main():
     try:
         main(sys.argv)
     except PyccError as e:
-        error(e)
+        sys.stderr.write(f"{e}\n")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
