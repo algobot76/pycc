@@ -10,7 +10,7 @@ def unwrap_optional(value: Optional[T]) -> T:
     Args:
         value: value to be unwrapped.
 
-    Retrns:
+    Returns:
         Unwrapped value.
     """
 
