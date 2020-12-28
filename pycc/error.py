@@ -20,6 +20,17 @@ class GeneralError(PyccError):
 
 
 class TokenError(PyccError):
+    """Token error.
+
+    Raise this exception if a token-related error occurs.
+
+
+    Attributes:
+        tok: The token.
+        prog: The program where the error is.
+        msg: An error message.
+    """
+
     # pylint: disable=super-init-not-called
     def __init__(self, tok: Token, prog: str, msg: str):
         self.tok = tok
@@ -59,14 +70,3 @@ def error_at(pos: int, prog: str, msg: str):
         msg: An error message.
     """
     raise GeneralError(pos, prog, msg)
-
-
-def error_tok(tok: Token, prog: str, msg: str):
-    """Specifies a error when consuming a token at a specific place to verror_at
-
-    Args:
-        tok: The token
-        prog: The program where the error is
-        msg: An error message.
-    """
-    raise TokenError(tok, prog, msg)

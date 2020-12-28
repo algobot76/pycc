@@ -2,7 +2,7 @@
 import sys
 
 from pycc.codegen import CodeGen
-from pycc.error import PyccError, error, error_tok
+from pycc.error import PyccError, TokenError, error
 from pycc.parser import Parser
 from pycc.token import Token, TokenKind
 from pycc.tokenizer import Tokenizer
@@ -17,7 +17,7 @@ def main(argv):
     node = Parser.expr(tok, prog)
 
     if Parser.rest.kind != TokenKind.TK_EOF:
-        error_tok(Parser.rest, prog, "extra token")
+        raise TokenError(Parser.rest, prog, "extra token")
 
     print("  .globl main")
     print("main:")

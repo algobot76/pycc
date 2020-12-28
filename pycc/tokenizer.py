@@ -2,7 +2,7 @@
 import string
 from typing import Optional
 
-from pycc.error import error, error_at, error_tok
+from pycc.error import TokenError, error, error_at
 from pycc.token import Token, TokenKind, new_token
 
 
@@ -117,5 +117,5 @@ class Tokenizer:
         """
 
         if tok.kind is not TokenKind.TK_NUM:
-            error_tok(tok, cls._prog, "expected a number")
+            raise TokenError(tok, cls._prog, "expected a number")
         return tok.val
