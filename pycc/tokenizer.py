@@ -2,7 +2,7 @@
 import string
 from typing import Optional
 
-from pycc.error import TokenError, error, error_at
+from pycc.error import GeneralError, TokenError, error
 from pycc.token import Token, TokenKind, new_token
 
 
@@ -59,7 +59,7 @@ class Tokenizer:
                 cur.next = new_token(TokenKind.TK_RESERVED, idx, idx + 1)
                 idx += 1
             else:
-                error_at(idx, cls._prog, "invalid token")
+                raise GeneralError(idx, cls._prog, "invalid token")
 
             cur = cur.next  # type: ignore
 

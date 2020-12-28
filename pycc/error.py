@@ -9,6 +9,14 @@ class PyccError(Exception):
 
 
 class GeneralError(PyccError):
+    """General error.
+
+    Args:
+        pos: Position of where the error is.
+        prog: The program where the error is.
+        msg: An error message.
+    """
+
     # pylint: disable=super-init-not-called
     def __init__(self, pos: int, prog: str, msg: str):
         self.pos = pos
@@ -59,14 +67,3 @@ def error(msg: str):
 
     sys.stderr.write(f"{msg}\n")
     sys.exit(1)
-
-
-def error_at(pos: int, prog: str, msg: str):
-    """Specifies a general error at a specific place to verror_at
-
-    Args:
-        pos: Position of where the error is
-        prog: The program where the error is
-        msg: An error message.
-    """
-    raise GeneralError(pos, prog, msg)
