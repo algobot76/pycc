@@ -20,6 +20,10 @@ class CodeGen:
         if node.kind == NodeKind.ND_NUM:
             print(f"  mov ${node.val}, %rax")
             return
+        elif node.kind == NodeKind.ND_NEG:
+            cls.gen_expr(unwrap_optional(node.lhs))
+            print("  neg %rax")
+            return
 
         cls.gen_expr(unwrap_optional(node.rhs))
         cls.push()
