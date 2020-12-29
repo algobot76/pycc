@@ -1,5 +1,5 @@
 """Pycc parser"""
-from pycc.ast import Node, NodeKind, new_binary, new_num
+from pycc.ast import Node, NodeKind, new_binary, new_num, new_unary
 from pycc.error import TokenError
 from pycc.token import Token, TokenKind
 from pycc.tokenizer import Tokenizer
@@ -53,16 +53,16 @@ class Parser:
         Returns:
             Node: Node of the current token.
         """
-        node = cls.primary(tok)
+        node = cls.unary(tok)
 
         while True:
             if Tokenizer.equal(cls.rest, "/"):
-                pri_node = cls.primary(unwrap_optional(cls.rest.next))
-                node = new_binary(NodeKind.ND_DIV, node, pri_node)
+                unary_node = cls.unary(unwrap_optional(cls.rest.next))
+                node = new_binary(NodeKind.ND_DIV, node, unary_node)
                 continue
             if Tokenizer.equal(cls.rest, "*"):
-                pri_node = cls.primary(unwrap_optional(cls.rest.next))
-                node = new_binary(NodeKind.ND_MUL, node, pri_node)
+                unary_node = cls.unary(unwrap_optional(cls.rest.next))
+                node = new_binary(NodeKind.ND_MUL, node, unary_node)
                 continue
 
             return node
@@ -91,3 +91,24 @@ class Parser:
                 node = new_binary(NodeKind.ND_SUB, node, mul_node)
                 continue
             return node
+
+    @classmethod
+    def unary(cls, tok: Token) -> Node:
+        """Constructs a new unary node.
+
+        unary = ("+" | "-") unary | primary
+
+        Args:
+            tok: Token to be parsed.
+
+        Returns:
+            A new unary node.
+        """
+
+        if Tokenizer.equal(tok, "+"):
+            return cls.unary(unwrap_optional(tok.next))
+
+        if Tokenizer.equal(tok, "-"):
+            return new_unary(NodeKind.ND_NEG, cls.unary(unwrap_optional(tok.next)))
+
+        return cls.primary(tok)

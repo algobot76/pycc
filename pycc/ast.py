@@ -14,6 +14,7 @@ class NodeKind(Enum):
         ND_SUB: -
         ND_MUL: *
         ND_DIV: /
+        ND_NEG: Unary -
         ND_NUM: Integer
     """
 
@@ -21,6 +22,7 @@ class NodeKind(Enum):
     ND_SUB = auto()
     ND_MUL = auto()
     ND_DIV = auto()
+    ND_NEG = auto()
     ND_NUM = auto()
 
 
@@ -68,3 +70,17 @@ def new_num(val: int) -> Node:
     """
 
     return Node(NodeKind.ND_NUM, None, None, val)
+
+
+def new_unary(kind: NodeKind, expr: Node) -> Node:
+    """Creates a new unary node.
+
+    Args:
+        kind: Node kind.
+        expr: Left hand side node.
+
+    Returns:
+        A new node.
+    """
+
+    return Node(kind, expr, None, 0)
