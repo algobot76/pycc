@@ -15,6 +15,10 @@ class NodeKind(Enum):
         ND_MUL: *
         ND_DIV: /
         ND_NEG: Unary -
+        ND_EQ: ==
+        ND_NE: !=
+        ND_LT: <
+        ND_LE: <=
         ND_NUM: Integer
     """
 
@@ -23,6 +27,10 @@ class NodeKind(Enum):
     ND_MUL = auto()
     ND_DIV = auto()
     ND_NEG = auto()
+    ND_EQ = auto()
+    ND_NE = auto()
+    ND_LT = auto()
+    ND_LE = auto()
     ND_NUM = auto()
 
 
