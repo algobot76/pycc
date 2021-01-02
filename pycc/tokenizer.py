@@ -54,8 +54,17 @@ class Tokenizer:
                     ch = cls._prog[idx]
                 cur.next.val = int(num)
                 cur.next.len = idx - old_idx
+            elif (
+                cls._peak(idx, idx + 2) == ("==")
+                or cls._peak(idx, idx + 2) == ("!=")
+                or cls._peak(idx, idx + 2) == ("<=")
+                or cls._peak(idx, idx + 2) == (">=")
+            ):
+                # Multi-letter punctuators
+                cur.next = new_token(TokenKind.TK_RESERVED, idx, idx + 2)
+                idx += 2
             elif ch in string.punctuation:
-                # Punctuator
+                # Single-letter punctuators
                 cur.next = new_token(TokenKind.TK_RESERVED, idx, idx + 1)
                 idx += 1
             else:
@@ -119,3 +128,7 @@ class Tokenizer:
         if tok.kind is not TokenKind.TK_NUM:
             raise TokenError(tok, cls._prog, "expected a number")
         return tok.val
+
+    @classmethod
+    def _peak(cls, start: int, end: int) -> str:
+        return cls._prog[start:end]
