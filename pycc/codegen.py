@@ -39,6 +39,22 @@ class CodeGen:
         elif node.kind == NodeKind.ND_DIV:
             print("  cqo")
             print("  idiv %rdi")
+        elif (
+            node.kind == NodeKind.ND_EQ
+            or node.kind == NodeKind.ND_NE
+            or node.kind == NodeKind.ND_LT
+            or node.kind == NodeKind.ND_LE
+        ):
+            print("  cmp %rdi, %rax")
+            if node.kind == NodeKind.ND_EQ:
+                print("  sete %al")
+            elif node.kind == NodeKind.ND_NE:
+                print("  setne %al")
+            elif node.kind == NodeKind.ND_LT:
+                print("  setl %al")
+            elif node.kind == NodeKind.ND_LE:
+                print("  setle %al")
+            print("  movzb %al, %rax")
         else:
             raise PyccError("invalid expression")
 
