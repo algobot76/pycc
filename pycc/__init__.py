@@ -14,11 +14,7 @@ def main(argv):
 
     prog = argv[1]
     tok: Token = Tokenizer.tokenize(prog)
-    node = Parser.expr(tok, prog)
-
-    if Parser.rest.kind != TokenKind.TK_EOF:
-        raise TokenError(Parser.rest, prog, "extra token")
-
+    node = Parser.parse(tok, prog)
     Codegen.codegen(node)
 
 
