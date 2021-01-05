@@ -1,6 +1,6 @@
 """Pycc parser"""
 from pycc.ast import Node, NodeKind, new_binary, new_num, new_unary
-from pycc.error import TokenError
+from pycc.exception import TokenError
 from pycc.token import Token, TokenKind
 from pycc.tokenizer import Tokenizer
 from pycc.utils import unwrap_optional

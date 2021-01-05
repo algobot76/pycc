@@ -2,7 +2,7 @@
 import sys
 
 from pycc.codegen import Codegen
-from pycc.error import PyccError, TokenError
+from pycc.exception import PyccError, TokenError
 from pycc.parser import Parser
 from pycc.token import Token, TokenKind
 from pycc.tokenizer import Tokenizer

@@ -3,7 +3,7 @@
 import string
 from typing import Optional
 
-from pycc.error import GeneralError, PyccError, TokenError
+from pycc.exception import GeneralError, PyccError, TokenError
 from pycc.token import Token, TokenKind, new_token
 
 

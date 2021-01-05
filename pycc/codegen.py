@@ -1,7 +1,7 @@
 """Pycc code generator."""
 
 from pycc.ast import Node, NodeKind
-from pycc.error import PyccError
+from pycc.exception import PyccError
 from pycc.utils import unwrap_optional
 
 
