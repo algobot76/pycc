@@ -8,10 +8,10 @@ def unwrap_optional(value: Optional[T]) -> T:
     """Unwraps the optional type and returns new type if type is not None.
 
     Args:
-        value: value to be unwrapped.
+        value: The value to be unwrapped.
 
     Returns:
-        Unwrapped value.
+        The unwrapped value.
     """
 
     if value is None:
