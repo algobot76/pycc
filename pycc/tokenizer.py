@@ -1,4 +1,5 @@
-"""Pycc tokenizer"""
+"""Pycc tokenizer."""
+
 import string
 from typing import Optional
 
@@ -9,8 +10,9 @@ from pycc.token import Token, TokenKind, new_token
 class Tokenizer:
     """Pycc tokenizer.
 
-    The tokenizer is a singleton and any call to its __init__ method will raise
-    an exception.
+    The tokenizer is a singleton and any call to its __init__ method
+    will raise an exception. Call its tokenize method to translate a program into
+    a linked list of tokens.
     """
 
     _prog: str = ""
