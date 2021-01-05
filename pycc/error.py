@@ -1,4 +1,5 @@
-"""Pycc custom exceptions"""
+"""Pycc custom exceptions."""
+
 from pycc.token import Token
 
 
@@ -10,9 +11,9 @@ class GeneralError(PyccError):
     """General error.
 
     Args:
-        pos: Position of where the error is.
+        pos: The position of where the error is.
         prog: The program where the error is.
-        msg: An error message.
+        msg: The error message.
     """
 
     # pylint: disable=super-init-not-called
@@ -33,7 +34,7 @@ class TokenError(PyccError):
     Attributes:
         tok: The token.
         prog: The program where the error is.
-        msg: An error message.
+        msg: The error message.
     """
 
     # pylint: disable=super-init-not-called
@@ -50,9 +51,9 @@ def verror_msg(pos: int, prog: str, msg: str) -> str:
     """Returns the formatted error message for the given paramters.
 
     Args:
-        pos: Position of where the error is.
+        pos: Thosition of where the error is.
         prog: The program where the error is.
-        msg: An error message.
+        msg: The error message.
     """
 
     result = f"{prog}\n"
