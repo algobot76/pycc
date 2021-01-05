@@ -13,7 +13,7 @@ class Codegen:
     generate the corresponding assembly code.
     """
 
-    depth: int = 0
+    _depth: int = 0
 
     def __init__(self):
         raise Exception("You cannot create an instance of Codegen")
@@ -31,7 +31,7 @@ class Codegen:
         cls._gen_expr(node)
         print("  ret")
 
-        assert cls.depth == 0
+        assert cls._depth == 0
 
     @classmethod
     def _gen_expr(cls, node: Node):
@@ -79,9 +79,9 @@ class Codegen:
     @classmethod
     def _push(cls):
         print("  push %rax")
-        cls.depth += 1
+        cls._depth += 1
 
     @classmethod
     def _pop(cls, arg: str):
         print(f"  pop {arg}")
-        cls.depth -= 1
+        cls._depth -= 1
