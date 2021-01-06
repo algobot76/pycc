@@ -1,8 +1,8 @@
 """Pycc"""
 import sys
 
-from pycc.codegen import CodeGen
-from pycc.error import PyccError, TokenError
+from pycc.codegen import Codegen
+from pycc.exception import PyccError, TokenError
 from pycc.parser import Parser
 from pycc.token import Token, TokenKind
 from pycc.tokenizer import Tokenizer
@@ -14,18 +14,8 @@ def main(argv):
 
     prog = argv[1]
     tok: Token = Tokenizer.tokenize(prog)
-    node = Parser.expr(tok, prog)
-
-    if Parser.rest.kind != TokenKind.TK_EOF:
-        raise TokenError(Parser.rest, prog, "extra token")
-
-    print("  .globl main")
-    print("main:")
-
-    CodeGen.gen_expr(node)
-    print("  ret")
-
-    assert CodeGen.depth == 0
+    node = Parser.parse(tok, prog)
+    Codegen.codegen(node)
 
 
 def run_main():

@@ -1,34 +1,52 @@
-"""Pycc code generator"""
+"""Pycc code generator."""
+
 from pycc.ast import Node, NodeKind
-from pycc.error import PyccError
+from pycc.exception import PyccError
 from pycc.utils import unwrap_optional
 
 
-class CodeGen:
+class Codegen:
     """Pycc code generator.
 
-    The code generator is a singleton for generating code expressions.
+    The code generator is a singleton for generating code expressions. Any call to its
+    __init__ method will raise an exception. Call its codegen method on an AST to
+    generate the corresponding assembly code.
     """
 
-    depth: int = 0
+    _depth: int = 0
 
     def __init__(self):
-        raise Exception("You cannot create an instance of CodeGen")
+        raise Exception("You cannot create an instance of Codegen")
 
     @classmethod
-    def gen_expr(cls, node: Node):
+    def codegen(cls, node: Node):
+        """Generates assembly code for a given AST.
+
+        Args:
+            node: The root node of the AST.
+        """
+
+        print("  .globl main")
+        print("main:")
+        cls._gen_expr(node)
+        print("  ret")
+
+        assert cls._depth == 0
+
+    @classmethod
+    def _gen_expr(cls, node: Node):
         if node.kind == NodeKind.ND_NUM:
             print(f"  mov ${node.val}, %rax")
             return
         elif node.kind == NodeKind.ND_NEG:
-            cls.gen_expr(unwrap_optional(node.lhs))
+            cls._gen_expr(unwrap_optional(node.lhs))
             print("  neg %rax")
             return
 
-        cls.gen_expr(unwrap_optional(node.rhs))
-        cls.push()
-        cls.gen_expr(unwrap_optional(node.lhs))
-        cls.pop("%rdi")
+        cls._gen_expr(unwrap_optional(node.rhs))
+        cls._push()
+        cls._gen_expr(unwrap_optional(node.lhs))
+        cls._pop("%rdi")
 
         if node.kind == NodeKind.ND_ADD:
             print("  add %rdi, %rax")
@@ -59,11 +77,11 @@ class CodeGen:
             raise PyccError("invalid expression")
 
     @classmethod
-    def push(cls):
+    def _push(cls):
         print("  push %rax")
-        cls.depth += 1
+        cls._depth += 1
 
     @classmethod
-    def pop(cls, arg: str):
+    def _pop(cls, arg: str):
         print(f"  pop {arg}")
-        cls.depth -= 1
+        cls._depth -= 1

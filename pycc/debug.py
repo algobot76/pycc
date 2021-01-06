@@ -7,11 +7,13 @@ from pycc.token import Token, TokenKind
 def print_tokens(tok: Token):
     """Prints the tokens.
 
-    This function is used for debugging only.
+    It takes the head of a linked list of tokens and prints all the tokens. This
+    function is used for debugging only.
 
     Args:
-        tok: A token to start with.
+        tok: The token to start with.
     """
+
     cur: Optional[Token] = tok
     while cur:
         next_kind: Optional[TokenKind] = None

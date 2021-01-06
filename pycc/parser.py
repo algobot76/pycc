@@ -1,6 +1,7 @@
-"""Pycc parser"""
+"""Pycc parser."""
+
 from pycc.ast import Node, NodeKind, new_binary, new_num, new_unary
-from pycc.error import TokenError
+from pycc.exception import TokenError
 from pycc.token import Token, TokenKind
 from pycc.tokenizer import Tokenizer
 from pycc.utils import unwrap_optional
@@ -10,202 +11,155 @@ class Parser:
     """Pycc parser.
 
     The parser is a singleton and any call to its __init__ method will raise
-    an exception.
+    an exception. Call its parse method to turn tokens into an AST.
     """
 
     _prog: str = ""
-    rest: Token
+    _rest: Token
 
     def __init__(self):
         raise Exception("You cannot create an instance of Parser")
 
     @classmethod
-    def expr(cls, tok: Token, prog: str) -> Node:
-        """Parses expressions.
+    def parse(cls, tok: Token, prog: str) -> Node:
+        """Parses the tokens into an AST.
 
-        Args:
-            tok: Token to be parsed.
-            prog: Source code to be parsed.
+        Arg:
+            tok: The head of the token list.
+            prog: The program to be parsed.
 
         Returns:
-            Node of the AST.
+            The root node of the AST.
         """
 
         cls._prog = prog
-        return cls.equality(tok)
+        node = cls._expr(tok)
+        if cls._rest == TokenKind.TK_EOF:
+            raise TokenError(cls._rest, cls._prog, "extra token")
+        return node
 
     @classmethod
-    def equality(cls, tok: Token) -> Node:
-        """Parses relational expressions.
+    def _expr(cls, tok: Token) -> Node:
+        # expr = equality
+        return cls._equality(tok)
 
-        equality = relational ("==" relational | "!=" relational)*
-
-        Args:
-            tok: Token to be parsed.
-
-        Returns:
-            A new binary node.
-        """
-
-        node = cls.relational(tok)
+    @classmethod
+    def _equality(cls, tok: Token) -> Node:
+        # equality = relational ("==" relational | "!=" relational)*
+        node = cls._relational(tok)
 
         while True:
-            if Tokenizer.equal(cls.rest, "=="):
+            if Tokenizer.equal(cls._rest, "=="):
                 node = new_binary(
-                    NodeKind.ND_EQ, node, cls.relational(unwrap_optional(cls.rest.next))
+                    NodeKind.ND_EQ,
+                    node,
+                    cls._relational(unwrap_optional(cls._rest.next)),
                 )
                 continue
 
-            if Tokenizer.equal(cls.rest, "!="):
+            if Tokenizer.equal(cls._rest, "!="):
                 node = new_binary(
-                    NodeKind.ND_NE, node, cls.relational(unwrap_optional(cls.rest.next))
+                    NodeKind.ND_NE,
+                    node,
+                    cls._relational(unwrap_optional(cls._rest.next)),
                 )
                 continue
 
             return node
 
     @classmethod
-    def relational(cls, tok: Token) -> Node:
-        """Parses relational operators.
-
-        relational = add ("<" add | "<=" add | ">" add | ">=" add)*
-
-        Args:
-            tok: Token to be parsed.
-
-        Returns:
-            A new relational node.
-        """
-
-        node = cls.add(tok)
+    def _relational(cls, tok: Token) -> Node:
+        # relational = add ("<" add | "<=" add | ">" add | ">=" add)*
+        node = cls._add(tok)
 
         while True:
-            if Tokenizer.equal(cls.rest, "<"):
+            if Tokenizer.equal(cls._rest, "<"):
                 node = new_binary(
-                    NodeKind.ND_LT, node, cls.add(unwrap_optional(cls.rest.next))
+                    NodeKind.ND_LT, node, cls._add(unwrap_optional(cls._rest.next))
                 )
                 continue
 
-            if Tokenizer.equal(cls.rest, "<="):
+            if Tokenizer.equal(cls._rest, "<="):
                 node = new_binary(
-                    NodeKind.ND_LE, node, cls.add(unwrap_optional(cls.rest.next))
+                    NodeKind.ND_LE, node, cls._add(unwrap_optional(cls._rest.next))
                 )
                 continue
 
-            if Tokenizer.equal(cls.rest, ">"):
+            if Tokenizer.equal(cls._rest, ">"):
                 node = new_binary(
-                    NodeKind.ND_LT, cls.add(unwrap_optional(cls.rest.next)), node
+                    NodeKind.ND_LT, cls._add(unwrap_optional(cls._rest.next)), node
                 )
                 continue
 
-            if Tokenizer.equal(cls.rest, ">="):
+            if Tokenizer.equal(cls._rest, ">="):
                 node = new_binary(
-                    NodeKind.ND_LE, cls.add(unwrap_optional(cls.rest.next)), node
+                    NodeKind.ND_LE, cls._add(unwrap_optional(cls._rest.next)), node
                 )
                 continue
 
             return node
 
     @classmethod
-    def add(cls, tok: Token) -> Node:
-        """Parses addition/substraction expressions.
-
-        add = mul ("+" mul | "-" mul)*
-
-        Args:
-            tok: Token to be parsed.
-
-        Returns:
-            A new binary node.
-        """
-
-        node = cls.mul(tok)
+    def _add(cls, tok: Token) -> Node:
+        # add = mul ("+" mul | "-" mul)*``
+        node = cls._mul(tok)
 
         while True:
-            if Tokenizer.equal(cls.rest, "+"):
+            if Tokenizer.equal(cls._rest, "+"):
                 node = new_binary(
-                    NodeKind.ND_ADD, node, cls.mul(unwrap_optional(cls.rest.next))
+                    NodeKind.ND_ADD, node, cls._mul(unwrap_optional(cls._rest.next))
                 )
                 continue
 
-            if Tokenizer.equal(cls.rest, "-"):
+            if Tokenizer.equal(cls._rest, "-"):
                 node = new_binary(
-                    NodeKind.ND_SUB, node, cls.mul(unwrap_optional(cls.rest.next))
+                    NodeKind.ND_SUB, node, cls._mul(unwrap_optional(cls._rest.next))
                 )
                 continue
 
             return node
 
     @classmethod
-    def mul(cls, tok: Token) -> Node:
-        """Parses multiplication/division expressions.
-
-        mul = unary ("*" unary | "/" unary)*
-
-        Args:
-            tok: Token to be parsed.
-
-        Returns:
-            A new binary node.
-        """
-        node = cls.unary(tok)
+    def _mul(cls, tok: Token) -> Node:
+        # mul = unary ("*" unary | "/" unary)*
+        node = cls._unary(tok)
 
         while True:
-            if Tokenizer.equal(cls.rest, "/"):
+            if Tokenizer.equal(cls._rest, "/"):
                 node = new_binary(
-                    NodeKind.ND_DIV, node, cls.unary(unwrap_optional(cls.rest.next))
+                    NodeKind.ND_DIV, node, cls._unary(unwrap_optional(cls._rest.next))
                 )
                 continue
-            if Tokenizer.equal(cls.rest, "*"):
+            if Tokenizer.equal(cls._rest, "*"):
                 node = new_binary(
-                    NodeKind.ND_MUL, node, cls.unary(unwrap_optional(cls.rest.next))
+                    NodeKind.ND_MUL, node, cls._unary(unwrap_optional(cls._rest.next))
                 )
                 continue
 
             return node
 
     @classmethod
-    def unary(cls, tok: Token) -> Node:
-        """Parses unary expressions.
-
-        unary = ("+" | "-") unary | primary
-
-        Args:
-            tok: The token to be parsed.
-
-        Returns:
-            A new unary node.
-        """
-
+    def _unary(cls, tok: Token) -> Node:
+        # unary = ("+" | "-") unary | primary
         if Tokenizer.equal(tok, "+"):
-            return cls.unary(unwrap_optional(tok.next))
+            return cls._unary(unwrap_optional(tok.next))
 
         if Tokenizer.equal(tok, "-"):
-            return new_unary(NodeKind.ND_NEG, cls.unary(unwrap_optional(tok.next)))
+            return new_unary(NodeKind.ND_NEG, cls._unary(unwrap_optional(tok.next)))
 
-        return cls.primary(tok)
+        return cls._primary(tok)
 
     @classmethod
-    def primary(cls, tok: Token) -> Node:
-        """Parses primary expressions.
-
-        primary = "(" expr ")" | num
-
-        Args:
-            tok: The token to be parsed.
-
-        Returns:
-            Node of the current token.
-        """
-
+    def _primary(cls, tok: Token) -> Node:
+        # primary = "(" expr ")" | num
         if Tokenizer.equal(tok, "("):
-            node = cls.expr(unwrap_optional(tok.next), cls._prog)
-            cls.rest = unwrap_optional(Tokenizer.skip(cls.rest, ")"))
+            node = cls._expr(unwrap_optional(tok.next))
+            cls._rest = unwrap_optional(Tokenizer.skip(cls._rest, ")"))
             return node
 
         if tok.kind == TokenKind.TK_NUM:
             node = new_num(tok.val)
-            cls.rest = unwrap_optional(tok.next)
+            cls._rest = unwrap_optional(tok.next)
             return node
 
         raise TokenError(tok, cls._prog, "expected an expression")

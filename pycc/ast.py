@@ -1,4 +1,5 @@
-"""Abstract syntax tree"""
+"""Pycc abstract syntax tree."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -39,10 +40,10 @@ class Node:
     """Represents a node.
 
     Attributes:
-        kind: Node kind.
-        lhs: Left hand side of the node.
-        rhs: Right hand side of the node.
-        val: Int value of the node.
+        kind: The node kind.
+        lhs: The left hand side of the node.
+        rhs: The right hand side of the node.
+        val: The value of the node.
     """
 
     kind: NodeKind
@@ -52,26 +53,25 @@ class Node:
 
 
 def new_binary(kind: NodeKind, lhs: Node, rhs: Node) -> Node:
-    """Creates a new node without a value.
+    """Creates a new node with the given LHS and RHS nodes.
 
     Args:
-        kind: NodeKind.
-        lhs: Left hand side Node.
-        rhs: Right hand side Node.
-        val: Value of node.
+        kind: The kind of the node.
+        lhs: The left hand side of the node.
+        rhs: The right hand side of the node.
 
     Returns:
-        A new node with the given parameters.
+        A new node with the specified LHS and RHS.
     """
 
     return Node(kind, lhs, rhs, 0)
 
 
 def new_num(val: int) -> Node:
-    """Creates a new node with a value.
+    """Creates a new node with the given value.
 
     Args:
-        val: Node value.
+        val: The value of the node.
 
     Returns:
         A new node with the value.
@@ -80,15 +80,15 @@ def new_num(val: int) -> Node:
     return Node(NodeKind.ND_NUM, None, None, val)
 
 
-def new_unary(kind: NodeKind, expr: Node) -> Node:
-    """Creates a new unary node.
+def new_unary(kind: NodeKind, lhs: Node) -> Node:
+    """Creates a new node with the given LHS node.
 
     Args:
-        kind: Node kind.
-        expr: Left hand side node.
+        kind: The kind of the node.
+        lhs: The left hand side of the node.
 
     Returns:
-        A new node.
+        A new node with the LHS node.
     """
 
-    return Node(kind, expr, None, 0)
+    return Node(kind, lhs, None, 0)

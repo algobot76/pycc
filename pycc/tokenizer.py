@@ -1,16 +1,18 @@
-"""Pycc tokenizer"""
+"""Pycc tokenizer."""
+
 import string
 from typing import Optional
 
-from pycc.error import GeneralError, PyccError, TokenError
+from pycc.exception import GeneralError, PyccError, TokenError
 from pycc.token import Token, TokenKind, new_token
 
 
 class Tokenizer:
     """Pycc tokenizer.
 
-    The tokenizer is a singleton and any call to its __init__ method will raise
-    an exception.
+    The tokenizer is a singleton and any call to its __init__ method
+    will raise an exception. Call its tokenize method to translate a program into
+    a linked list of tokens.
     """
 
     _prog: str = ""
@@ -80,8 +82,8 @@ class Tokenizer:
         """Consumes the current token if it matches `s`.
 
         Args:
-            tok: A token.
-            s: A string to be comapred with.
+            tok: The token to be compared with.
+            s: The string to be comapred with.
 
         Returns:
             A bool that indicates if the match exists.
@@ -101,9 +103,9 @@ class Tokenizer:
         """Ensures that the current token is `s`.
 
         Args:
-            tok: A token.
+            tok: The token to be compared with.
             prog: The program's source code.
-            s: A string to be comapred with.
+            s: The string to be comapred with.
 
         Returns:
             The token that matches `s`.
