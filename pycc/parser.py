@@ -40,10 +40,12 @@ class Parser:
 
     @classmethod
     def _expr(cls, tok: Token) -> Node:
+        # expr = equality
         return cls._equality(tok)
 
     @classmethod
     def _equality(cls, tok: Token) -> Node:
+        # equality = relational ("==" relational | "!=" relational)*
         node = cls._relational(tok)
 
         while True:
@@ -67,6 +69,7 @@ class Parser:
 
     @classmethod
     def _relational(cls, tok: Token) -> Node:
+        # relational = add ("<" add | "<=" add | ">" add | ">=" add)*
         node = cls._add(tok)
 
         while True:
@@ -98,6 +101,7 @@ class Parser:
 
     @classmethod
     def _add(cls, tok: Token) -> Node:
+        # add = mul ("+" mul | "-" mul)*``
         node = cls._mul(tok)
 
         while True:
@@ -117,6 +121,7 @@ class Parser:
 
     @classmethod
     def _mul(cls, tok: Token) -> Node:
+        # mul = unary ("*" unary | "/" unary)*
         node = cls._unary(tok)
 
         while True:
@@ -135,6 +140,7 @@ class Parser:
 
     @classmethod
     def _unary(cls, tok: Token) -> Node:
+        # unary = ("+" | "-") unary | primary
         if Tokenizer.equal(tok, "+"):
             return cls._unary(unwrap_optional(tok.next))
 
@@ -145,6 +151,7 @@ class Parser:
 
     @classmethod
     def _primary(cls, tok: Token) -> Node:
+        # primary = "(" expr ")" | num
         if Tokenizer.equal(tok, "("):
             node = cls._expr(unwrap_optional(tok.next))
             cls._rest = unwrap_optional(Tokenizer.skip(cls._rest, ")"))
