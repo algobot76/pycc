@@ -32,11 +32,9 @@ class Codegen:
         while node:
             cls._gen_stmt(node)
             assert cls._depth == 0
-            tempnode = node.next
-            if tempnode is None:
+            if node.next is None:
                 break
-            else:
-                node = unwrap_optional(tempnode)
+            node = unwrap_optional(node.next)
 
         print("  ret")
 
