@@ -1,5 +1,7 @@
 """Pycc code generator."""
 
+from typing import Optional
+
 from pycc.ast import Node, NodeKind
 from pycc.exception import PyccError
 from pycc.utils import unwrap_optional
@@ -19,7 +21,7 @@ class Codegen:
         raise Exception("You cannot create an instance of Codegen")
 
     @classmethod
-    def codegen(cls, node: Node):
+    def codegen(cls, node: Optional[Node]):
         """Generates assembly code for a given AST.
 
         Args:
@@ -32,9 +34,7 @@ class Codegen:
         while node:
             cls._gen_stmt(node)
             assert cls._depth == 0
-            if node.next is None:
-                break
-            node = unwrap_optional(node.next)
+            node = node.next
 
         print("  ret")
 
