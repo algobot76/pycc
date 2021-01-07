@@ -1,5 +1,7 @@
 """Pycc code generator."""
 
+from typing import Optional
+
 from pycc.ast import Node, NodeKind
 from pycc.exception import PyccError
 from pycc.utils import unwrap_optional
@@ -19,7 +21,7 @@ class Codegen:
         raise Exception("You cannot create an instance of Codegen")
 
     @classmethod
-    def codegen(cls, node: Node):
+    def codegen(cls, node: Optional[Node]):
         """Generates assembly code for a given AST.
 
         Args:
@@ -28,10 +30,20 @@ class Codegen:
 
         print("  .globl main")
         print("main:")
-        cls._gen_expr(node)
+
+        while node:
+            cls._gen_stmt(node)
+            assert cls._depth == 0
+            node = node.next
+
         print("  ret")
 
-        assert cls._depth == 0
+    @classmethod
+    def _gen_stmt(cls, node: Node):
+        if node.kind == NodeKind.ND_EXPR_STMT:
+            cls._gen_expr(unwrap_optional(node.lhs))
+        else:
+            raise PyccError("invalid statement")
 
     @classmethod
     def _gen_expr(cls, node: Node):

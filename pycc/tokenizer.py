@@ -110,7 +110,6 @@ class Tokenizer:
         Returns:
             The token that matches `s`.
         """
-
         if not cls.equal(tok, s):
             raise PyccError(f"expected '{s}'")
 

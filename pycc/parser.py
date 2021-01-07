@@ -33,10 +33,16 @@ class Parser:
         """
 
         cls._prog = prog
-        node = cls._expr(tok)
-        if cls._rest == TokenKind.TK_EOF:
-            raise TokenError(cls._rest, cls._prog, "extra token")
-        return node
+        cls._rest = tok
+
+        head = Node(NodeKind.ND_EXPR_STMT, None, None, None, 0)  # dummy node
+        cur = head
+
+        while cls._rest.kind != TokenKind.TK_EOF:
+            cur.next = cls._stmt(cls._rest)
+            cur = cur.next
+
+        return unwrap_optional(head.next)
 
     @classmethod
     def _expr(cls, tok: Token) -> Node:
@@ -163,3 +169,15 @@ class Parser:
             return node
 
         raise TokenError(tok, cls._prog, "expected an expression")
+
+    @classmethod
+    def _stmt(cls, tok: Token) -> Node:
+        # stmt = expr-stmt
+        return cls._expr_stmt(tok)
+
+    @classmethod
+    def _expr_stmt(cls, tok: Token) -> Node:
+        # expr-stmt = expr ";"
+        node = new_unary(NodeKind.ND_EXPR_STMT, cls._expr(tok))
+        cls._rest = unwrap_optional(Tokenizer.skip(cls._rest, ";"))
+        return node

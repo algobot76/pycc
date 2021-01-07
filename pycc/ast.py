@@ -11,16 +11,17 @@ class NodeKind(Enum):
     """Represents a node kind.
 
     Attributes:
-        ND_ADD: +
-        ND_SUB: -
-        ND_MUL: *
-        ND_DIV: /
-        ND_NEG: Unary -
-        ND_EQ: ==
-        ND_NE: !=
-        ND_LT: <
-        ND_LE: <=
-        ND_NUM: Integer
+        ND_ADD:       +
+        ND_SUB:       -
+        ND_MUL:       *
+        ND_DIV:       /
+        ND_NEG:       Unary -
+        ND_EQ:        ==
+        ND_NE:        !=
+        ND_LT:        <
+        ND_LE:        <=
+        ND_EXPR_STMT: Expression statement
+        ND_NUM:       Integer
     """
 
     ND_ADD = auto()
@@ -32,6 +33,7 @@ class NodeKind(Enum):
     ND_NE = auto()
     ND_LT = auto()
     ND_LE = auto()
+    ND_EXPR_STMT = auto()
     ND_NUM = auto()
 
 
@@ -47,6 +49,7 @@ class Node:
     """
 
     kind: NodeKind
+    next: Optional[Node]
     lhs: Optional[Node]
     rhs: Optional[Node]
     val: int
@@ -64,7 +67,7 @@ def new_binary(kind: NodeKind, lhs: Node, rhs: Node) -> Node:
         A new node with the specified LHS and RHS.
     """
 
-    return Node(kind, lhs, rhs, 0)
+    return Node(kind, None, lhs, rhs, 0)
 
 
 def new_num(val: int) -> Node:
@@ -77,7 +80,7 @@ def new_num(val: int) -> Node:
         A new node with the value.
     """
 
-    return Node(NodeKind.ND_NUM, None, None, val)
+    return Node(NodeKind.ND_NUM, None, None, None, val)
 
 
 def new_unary(kind: NodeKind, lhs: Node) -> Node:
@@ -91,4 +94,4 @@ def new_unary(kind: NodeKind, lhs: Node) -> Node:
         A new node with the LHS node.
     """
 
-    return Node(kind, lhs, None, 0)
+    return Node(kind, None, lhs, None, 0)
