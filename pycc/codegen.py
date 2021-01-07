@@ -28,10 +28,24 @@ class Codegen:
 
         print("  .globl main")
         print("main:")
-        cls._gen_expr(node)
+
+        while node:
+            cls._gen_stmt(node)
+            assert cls._depth == 0
+            tempnode = node.next
+            if tempnode is None:
+                break
+            else:
+                node = unwrap_optional(tempnode)
+
         print("  ret")
 
-        assert cls._depth == 0
+    @classmethod
+    def _gen_stmt(cls, node: Node):
+        if node.kind == NodeKind.ND_EXPR_STMT:
+            cls._gen_expr(unwrap_optional(node.lhs))
+        else:
+            raise PyccError("invalid statement")
 
     @classmethod
     def _gen_expr(cls, node: Node):
