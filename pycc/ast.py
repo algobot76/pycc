@@ -20,7 +20,9 @@ class NodeKind(Enum):
         ND_NE:        !=
         ND_LT:        <
         ND_LE:        <=
+        ND_ASSIGN:    =
         ND_EXPR_STMT: Expression statement
+        ND_VAR:       Variable
         ND_NUM:       Integer
     """
 
@@ -33,7 +35,9 @@ class NodeKind(Enum):
     ND_NE = auto()
     ND_LT = auto()
     ND_LE = auto()
+    ND_ASSIGN = auto()
     ND_EXPR_STMT = auto()
+    ND_VAR = auto()
     ND_NUM = auto()
 
 
