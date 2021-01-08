@@ -49,7 +49,7 @@ class Node:
         kind: The node kind.
         lhs: The left hand side of the node.
         rhs: The right hand side of the node.
-        name: The name of the node.
+        name: The identifier of the node.
         val: The value of the node.
     """
 
@@ -101,3 +101,16 @@ def new_unary(kind: NodeKind, lhs: Node) -> Node:
     """
 
     return Node(kind, None, lhs, None, "", 0)
+
+
+def new_var_node(name: str) -> Node:
+    """Creates a new node with the given identifier.
+
+    Args:
+        name: The identifier of the node.
+
+    Returns:
+        A new node with the identifier.
+    """
+
+    return Node(NodeKind.ND_VAR, None, None, None, name, 0)
