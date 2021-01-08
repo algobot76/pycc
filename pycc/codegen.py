@@ -31,11 +31,18 @@ class Codegen:
         print("  .globl main")
         print("main:")
 
+        # Prologue
+        print("  push %rbp")
+        print("  mov %rsp, %rbp")
+        print("  sub $208, %rsp")
+
         while node:
             cls._gen_stmt(node)
             assert cls._depth == 0
             node = node.next
 
+        print("  mov %rbp, %rsp")
+        print("  pop %rbp")
         print("  ret")
 
     @classmethod
@@ -49,6 +56,17 @@ class Codegen:
     def _gen_expr(cls, node: Node):
         if node.kind == NodeKind.ND_NUM:
             print(f"  mov ${node.val}, %rax")
+            return
+        elif node.kind == NodeKind.ND_VAR:
+            cls._gen_addr(unwrap_optional(node))
+            print("  mov (%rax), %rax")
+            return
+        elif node.kind == NodeKind.ND_ASSIGN:
+            cls._gen_addr(unwrap_optional(node.lhs))
+            cls._push()
+            cls._gen_expr(unwrap_optional(node.rhs))
+            cls._pop("%rdi")
+            print("  mov %rax, (%rdi)")
             return
         elif node.kind == NodeKind.ND_NEG:
             cls._gen_expr(unwrap_optional(node.lhs))
@@ -97,3 +115,11 @@ class Codegen:
     def _pop(cls, arg: str):
         print(f"  pop {arg}")
         cls._depth -= 1
+
+    @classmethod
+    def _gen_addr(cls, node: Node):
+        if node.kind == NodeKind.ND_VAR:
+            offset = (ord(node.name) - ord("a") + 1) * 8
+            print(f"  lea {-offset}(%rbp), %rax")
+        else:
+            raise PyccError("Not an lvalue")

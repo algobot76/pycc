@@ -35,7 +35,7 @@ class Parser:
         cls._prog = prog
         cls._rest = tok
 
-        head = Node(NodeKind.ND_EXPR_STMT, None, None, None, 0)  # dummy node
+        head = Node(NodeKind.ND_EXPR_STMT, None, None, None, "", 0)  # dummy node
         cur = head
 
         while cls._rest.kind != TokenKind.TK_EOF:
