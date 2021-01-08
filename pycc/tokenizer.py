@@ -56,6 +56,11 @@ class Tokenizer:
                     ch = cls._prog[idx]
                 cur.next.val = int(num)
                 cur.next.len = idx - old_idx
+            elif "a" <= ch <= "z":
+                # Identifier
+                cur.next = new_token(TokenKind.TK_INDENT, idx, idx + 1)
+                idx += 1
+                pass
             elif (
                 cls._peak(idx, idx + 2) == ("==")
                 or cls._peak(idx, idx + 2) == ("!=")
