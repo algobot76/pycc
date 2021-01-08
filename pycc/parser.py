@@ -1,6 +1,6 @@
 """Pycc parser."""
 
-from pycc.ast import Node, NodeKind, new_binary, new_num, new_unary
+from pycc.ast import Node, NodeKind, new_binary, new_num, new_unary, new_var_node
 from pycc.exception import TokenError
 from pycc.token import Token, TokenKind
 from pycc.tokenizer import Tokenizer
@@ -46,8 +46,18 @@ class Parser:
 
     @classmethod
     def _expr(cls, tok: Token) -> Node:
-        # expr = equality
-        return cls._equality(tok)
+        # expr = assign
+        return cls._assign(tok)
+
+    @classmethod
+    def _assign(cls, tok: Token) -> Node:
+        # assign = equality ("=" assign)?
+        node = cls._equality(tok)
+        if Tokenizer.equal(cls._rest, "="):
+            node = new_binary(
+                NodeKind.ND_ASSIGN, node, cls._assign(unwrap_optional(cls._rest.next))
+            )
+        return node
 
     @classmethod
     def _equality(cls, tok: Token) -> Node:
@@ -157,12 +167,16 @@ class Parser:
 
     @classmethod
     def _primary(cls, tok: Token) -> Node:
-        # primary = "(" expr ")" | num
+        # primary = "(" expr ")" | ident | num
         if Tokenizer.equal(tok, "("):
             node = cls._expr(unwrap_optional(tok.next))
             cls._rest = unwrap_optional(Tokenizer.skip(cls._rest, ")"))
             return node
 
+        if tok.kind == TokenKind.TK_INDENT:
+            node = new_var_node(cls._prog[tok.loc])
+            cls._rest = unwrap_optional(tok.next)
+            return node
         if tok.kind == TokenKind.TK_NUM:
             node = new_num(tok.val)
             cls._rest = unwrap_optional(tok.next)
