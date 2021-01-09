@@ -12,13 +12,13 @@ class TokenKind(Enum):
 
     Attributes:
         TK_RESERVED: Keywords or punctuators.
-        TK_INDENT: Identifiers
+        TK_IDENT: Identifiers
         TK_NUM: Numerical literals.
         TK_EOF: End-of-file markers.
     """
 
     TK_RESERVED = auto()
-    TK_INDENT = auto()
+    TK_IDENT = auto()
     TK_NUM = auto()
     TK_EOF = auto()
 

@@ -173,7 +173,7 @@ class Parser:
             cls._rest = unwrap_optional(Tokenizer.skip(cls._rest, ")"))
             return node
 
-        if tok.kind == TokenKind.TK_INDENT:
+        if tok.kind == TokenKind.TK_IDENT:
             node = new_var_node(cls._prog[tok.loc])
             cls._rest = unwrap_optional(tok.next)
             return node

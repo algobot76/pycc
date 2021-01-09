@@ -58,7 +58,7 @@ class Tokenizer:
                 cur.next.len = idx - old_idx
             elif "a" <= ch <= "z":
                 # Identifier
-                cur.next = new_token(TokenKind.TK_INDENT, idx, idx + 1)
+                cur.next = new_token(TokenKind.TK_IDENT, idx, idx + 1)
                 idx += 1
                 pass
             elif (
