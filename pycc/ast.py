@@ -73,30 +73,3 @@ class Node:
         self.rhs = rhs
         self.name = name
         self.val = val
-
-
-def new_unary(kind: NodeKind, lhs: Node) -> Node:
-    """Creates a new node with the given LHS node.
-
-    Args:
-        kind: The kind of the node.
-        lhs: The left hand side of the node.
-
-    Returns:
-        A new node with the LHS node.
-    """
-
-    return Node(kind, None, lhs, None, "", 0)
-
-
-def new_var_node(name: str) -> Node:
-    """Creates a new node with the given identifier.
-
-    Args:
-        name: The identifier of the node.
-
-    Returns:
-        A new node with the identifier.
-    """
-
-    return Node(NodeKind.ND_VAR, None, None, None, name, 0)
