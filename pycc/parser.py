@@ -1,6 +1,6 @@
 """Pycc parser."""
 
-from pycc.ast import Node, NodeKind, new_binary, new_num, new_unary, new_var_node
+from pycc.ast import Node, NodeKind
 from pycc.exception import TokenError
 from pycc.token import Token, TokenKind
 from pycc.tokenizer import Tokenizer
@@ -35,7 +35,7 @@ class Parser:
         cls._prog = prog
         cls._rest = tok
 
-        head = Node(NodeKind.ND_EXPR_STMT, None, None, None, "", 0)  # dummy node
+        head = Node(NodeKind.ND_EXPR_STMT)  # dummy node
         cur = head
 
         while cls._rest.kind != TokenKind.TK_EOF:
@@ -54,8 +54,10 @@ class Parser:
         # assign = equality ("=" assign)?
         node = cls._equality(tok)
         if Tokenizer.equal(cls._rest, "="):
-            node = new_binary(
-                NodeKind.ND_ASSIGN, node, cls._assign(unwrap_optional(cls._rest.next))
+            node = Node(
+                NodeKind.ND_ASSIGN,
+                lhs=node,
+                rhs=cls._assign(unwrap_optional(cls._rest.next)),
             )
         return node
 
@@ -66,18 +68,18 @@ class Parser:
 
         while True:
             if Tokenizer.equal(cls._rest, "=="):
-                node = new_binary(
+                node = Node(
                     NodeKind.ND_EQ,
-                    node,
-                    cls._relational(unwrap_optional(cls._rest.next)),
+                    lhs=node,
+                    rhs=cls._relational(unwrap_optional(cls._rest.next)),
                 )
                 continue
 
             if Tokenizer.equal(cls._rest, "!="):
-                node = new_binary(
+                node = Node(
                     NodeKind.ND_NE,
-                    node,
-                    cls._relational(unwrap_optional(cls._rest.next)),
+                    lhs=node,
+                    rhs=cls._relational(unwrap_optional(cls._rest.next)),
                 )
                 continue
 
@@ -90,26 +92,34 @@ class Parser:
 
         while True:
             if Tokenizer.equal(cls._rest, "<"):
-                node = new_binary(
-                    NodeKind.ND_LT, node, cls._add(unwrap_optional(cls._rest.next))
+                node = Node(
+                    NodeKind.ND_LT,
+                    lhs=node,
+                    rhs=cls._add(unwrap_optional(cls._rest.next)),
                 )
                 continue
 
             if Tokenizer.equal(cls._rest, "<="):
-                node = new_binary(
-                    NodeKind.ND_LE, node, cls._add(unwrap_optional(cls._rest.next))
+                node = Node(
+                    NodeKind.ND_LE,
+                    lhs=node,
+                    rhs=cls._add(unwrap_optional(cls._rest.next)),
                 )
                 continue
 
             if Tokenizer.equal(cls._rest, ">"):
-                node = new_binary(
-                    NodeKind.ND_LT, cls._add(unwrap_optional(cls._rest.next)), node
+                node = Node(
+                    NodeKind.ND_LT,
+                    lhs=cls._add(unwrap_optional(cls._rest.next)),
+                    rhs=node,
                 )
                 continue
 
             if Tokenizer.equal(cls._rest, ">="):
-                node = new_binary(
-                    NodeKind.ND_LE, cls._add(unwrap_optional(cls._rest.next)), node
+                node = Node(
+                    NodeKind.ND_LE,
+                    lhs=cls._add(unwrap_optional(cls._rest.next)),
+                    rhs=node,
                 )
                 continue
 
@@ -122,14 +132,18 @@ class Parser:
 
         while True:
             if Tokenizer.equal(cls._rest, "+"):
-                node = new_binary(
-                    NodeKind.ND_ADD, node, cls._mul(unwrap_optional(cls._rest.next))
+                node = Node(
+                    NodeKind.ND_ADD,
+                    lhs=node,
+                    rhs=cls._mul(unwrap_optional(cls._rest.next)),
                 )
                 continue
 
             if Tokenizer.equal(cls._rest, "-"):
-                node = new_binary(
-                    NodeKind.ND_SUB, node, cls._mul(unwrap_optional(cls._rest.next))
+                node = Node(
+                    NodeKind.ND_SUB,
+                    lhs=node,
+                    rhs=cls._mul(unwrap_optional(cls._rest.next)),
                 )
                 continue
 
@@ -142,13 +156,17 @@ class Parser:
 
         while True:
             if Tokenizer.equal(cls._rest, "/"):
-                node = new_binary(
-                    NodeKind.ND_DIV, node, cls._unary(unwrap_optional(cls._rest.next))
+                node = Node(
+                    NodeKind.ND_DIV,
+                    lhs=node,
+                    rhs=cls._unary(unwrap_optional(cls._rest.next)),
                 )
                 continue
             if Tokenizer.equal(cls._rest, "*"):
-                node = new_binary(
-                    NodeKind.ND_MUL, node, cls._unary(unwrap_optional(cls._rest.next))
+                node = Node(
+                    NodeKind.ND_MUL,
+                    lhs=node,
+                    rhs=cls._unary(unwrap_optional(cls._rest.next)),
                 )
                 continue
 
@@ -161,7 +179,7 @@ class Parser:
             return cls._unary(unwrap_optional(tok.next))
 
         if Tokenizer.equal(tok, "-"):
-            return new_unary(NodeKind.ND_NEG, cls._unary(unwrap_optional(tok.next)))
+            return Node(NodeKind.ND_NEG, lhs=cls._unary(unwrap_optional(tok.next)))
 
         return cls._primary(tok)
 
@@ -174,11 +192,11 @@ class Parser:
             return node
 
         if tok.kind == TokenKind.TK_IDENT:
-            node = new_var_node(cls._prog[tok.loc])
+            node = Node(NodeKind.ND_VAR, name=cls._prog[tok.loc])
             cls._rest = unwrap_optional(tok.next)
             return node
         if tok.kind == TokenKind.TK_NUM:
-            node = new_num(tok.val)
+            node = Node(NodeKind.ND_NUM, val=tok.val)
             cls._rest = unwrap_optional(tok.next)
             return node
 
@@ -192,6 +210,6 @@ class Parser:
     @classmethod
     def _expr_stmt(cls, tok: Token) -> Node:
         # expr-stmt = expr ";"
-        node = new_unary(NodeKind.ND_EXPR_STMT, cls._expr(tok))
+        node = Node(NodeKind.ND_EXPR_STMT, lhs=cls._expr(tok))
         cls._rest = unwrap_optional(Tokenizer.skip(cls._rest, ";"))
         return node

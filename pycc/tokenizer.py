@@ -4,7 +4,7 @@ import string
 from typing import Optional
 
 from pycc.exception import GeneralError, PyccError, TokenError
-from pycc.token import Token, TokenKind, new_token
+from pycc.token import Token, TokenKind
 
 
 class Tokenizer:
@@ -32,7 +32,7 @@ class Tokenizer:
         """
 
         cls._prog = prog
-        head = Token(TokenKind.TK_RESERVED, None, 0, 0, 0)  # Dummy
+        head = Token(TokenKind.TK_RESERVED)  # Dummy
         cur = head
 
         n = len(cls._prog)
@@ -45,7 +45,7 @@ class Tokenizer:
                 continue
             elif ch.isdigit():
                 # Numerical literal
-                cur.next = new_token(TokenKind.TK_NUM, idx, idx)
+                cur.next = Token(TokenKind.TK_NUM, start=idx, end=idx)
                 old_idx = idx
                 num = ""
                 while ch.isdigit():
@@ -58,7 +58,7 @@ class Tokenizer:
                 cur.next.len = idx - old_idx
             elif "a" <= ch <= "z":
                 # Identifier
-                cur.next = new_token(TokenKind.TK_IDENT, idx, idx + 1)
+                cur.next = Token(TokenKind.TK_IDENT, start=idx, end=idx + 1)
                 idx += 1
                 pass
             elif (
@@ -68,18 +68,18 @@ class Tokenizer:
                 or cls._peak(idx, idx + 2) == (">=")
             ):
                 # Multi-letter punctuators
-                cur.next = new_token(TokenKind.TK_RESERVED, idx, idx + 2)
+                cur.next = Token(TokenKind.TK_RESERVED, start=idx, end=idx + 2)
                 idx += 2
             elif ch in string.punctuation:
                 # Single-letter punctuators
-                cur.next = new_token(TokenKind.TK_RESERVED, idx, idx + 1)
+                cur.next = Token(TokenKind.TK_RESERVED, start=idx, end=idx + 1)
                 idx += 1
             else:
                 raise GeneralError(idx, cls._prog, "invalid token")
 
             cur = cur.next  # type: ignore
 
-        cur.next = new_token(TokenKind.TK_EOF, idx, idx)
+        cur.next = Token(TokenKind.TK_EOF, start=idx, end=idx)
         return head.next
 
     @classmethod

@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Optional
 
 
 class TokenKind(Enum):
-    """Represnets a token kind.
+    """Token kind.
 
     Attributes:
         TK_RESERVED: Keywords or punctuators.
@@ -23,35 +22,30 @@ class TokenKind(Enum):
     TK_EOF = auto()
 
 
-@dataclass
 class Token:
-    """Represents a token.
+    """Token.
+
+    The val attribute is used if its kind is TK_NUM.
 
     Attributes:
-        kind: Token kind.
-        next: Next token.
-        val: If kind is TK_NUM, its value.
-        loc: Token location.
-        len: Token length.
+        kind: The token kind.
+        next: The next token.
+        val: The value of the token.
+        loc: The start location within the program.
+        len: The length of the program segment represented by the token.
     """
 
-    kind: TokenKind
-    next: Optional[Token]
-    val: int
-    loc: int
-    len: int
-
-
-def new_token(kind: TokenKind, start: int = 0, end: int = 0) -> Token:
-    """Creates a new token.
-
-    Args:
-        kind: Token kind.
-        star: Start index of the token.
-        end: End index of the token.
-
-    Returns:
-        A new token constructed with the given paramters.
-    """
-
-    return Token(kind, None, 0, start, end - start)
+    def __init__(
+        self,
+        kind: TokenKind,
+        *,
+        next_: Optional[Token] = None,
+        val: int = 0,
+        start: int = 0,
+        end: int = 0,
+    ):
+        self.kind = kind
+        self.next = next_
+        self.val = val
+        self.loc = start
+        self.len = end - start
