@@ -75,19 +75,6 @@ class Node:
         self.val = val
 
 
-def new_num(val: int) -> Node:
-    """Creates a new node with the given value.
-
-    Args:
-        val: The value of the node.
-
-    Returns:
-        A new node with the value.
-    """
-
-    return Node(NodeKind.ND_NUM, None, None, None, "", val)
-
-
 def new_unary(kind: NodeKind, lhs: Node) -> Node:
     """Creates a new node with the given LHS node.
 

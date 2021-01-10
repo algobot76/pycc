@@ -1,6 +1,6 @@
 """Pycc parser."""
 
-from pycc.ast import Node, NodeKind, new_num, new_unary, new_var_node
+from pycc.ast import Node, NodeKind, new_unary, new_var_node
 from pycc.exception import TokenError
 from pycc.token import Token, TokenKind
 from pycc.tokenizer import Tokenizer
@@ -196,7 +196,7 @@ class Parser:
             cls._rest = unwrap_optional(tok.next)
             return node
         if tok.kind == TokenKind.TK_NUM:
-            node = new_num(tok.val)
+            node = Node(NodeKind.ND_NUM, val=tok.val)
             cls._rest = unwrap_optional(tok.next)
             return node
 
