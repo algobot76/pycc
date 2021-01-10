@@ -7,6 +7,36 @@ from enum import Enum, auto
 from typing import Optional
 
 
+@dataclass
+class Obj:
+    """Local variable.
+
+    Attributes:
+        next: The next local variable.
+        name: The name of the variable.
+        offset: The offset from RBP.
+    """
+
+    next: Optional[Obj]
+    name: str
+    offset: int
+
+
+@dataclass
+class Function:
+    """Function.
+
+    Attributes:
+        body: The body of the function.
+        locals: The local variables in the function.
+        stack_size: The size of the stack used by the function.
+    """
+
+    body: Node
+    locals: Obj
+    stack_size: int
+
+
 class NodeKind(Enum):
     """Represents a node kind.
 
