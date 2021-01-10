@@ -7,7 +7,7 @@ from typing import Optional
 
 
 class NodeKind(Enum):
-    """Represents a node kind.
+    """Node kind.
 
     Attributes:
         ND_ADD:       +
@@ -41,7 +41,7 @@ class NodeKind(Enum):
 
 
 class Node:
-    """Represents a node.
+    """Node.
 
     Attributes:
         kind: The node kind.
@@ -51,16 +51,10 @@ class Node:
         val: The value of the node.
     """
 
-    # kind: NodeKind
-    # next: Optional[Node]
-    # lhs: Optional[Node]
-    # rhs: Optional[Node]
-    # name: str
-    # val: int
-
     def __init__(
         self,
         kind: NodeKind,
+        *,
         next_: Optional[Node] = None,
         lhs: Optional[Node] = None,
         rhs: Optional[Node] = None,
