@@ -117,6 +117,12 @@ class Codegen:
         cls._depth -= 1
 
     @classmethod
+    def _align_to(cls, n: int, align: int) -> int:
+        # Round up n to the nearest multiple of align. For instance, _align_to(5, 8)
+        # returns 8 and align_to(11, 8) returns 16.
+        return (n + align - 1) // align * align
+
+    @classmethod
     def _gen_addr(cls, node: Node):
         if node.kind == NodeKind.ND_VAR:
             offset = (ord(node.name) - ord("a") + 1) * 8
