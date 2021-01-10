@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Optional
 
@@ -41,7 +40,6 @@ class NodeKind(Enum):
     ND_NUM = auto()
 
 
-@dataclass
 class Node:
     """Represents a node.
 
@@ -53,27 +51,28 @@ class Node:
         val: The value of the node.
     """
 
-    kind: NodeKind
-    next: Optional[Node]
-    lhs: Optional[Node]
-    rhs: Optional[Node]
-    name: str
-    val: int
+    # kind: NodeKind
+    # next: Optional[Node]
+    # lhs: Optional[Node]
+    # rhs: Optional[Node]
+    # name: str
+    # val: int
 
-
-def new_binary(kind: NodeKind, lhs: Node, rhs: Node) -> Node:
-    """Creates a new node with the given LHS and RHS nodes.
-
-    Args:
-        kind: The kind of the node.
-        lhs: The left hand side of the node.
-        rhs: The right hand side of the node.
-
-    Returns:
-        A new node with the specified LHS and RHS.
-    """
-
-    return Node(kind, None, lhs, rhs, "", 0)
+    def __init__(
+        self,
+        kind: NodeKind,
+        next_: Optional[Node] = None,
+        lhs: Optional[Node] = None,
+        rhs: Optional[Node] = None,
+        name: str = "",
+        val: int = 0,
+    ):
+        self.kind = kind
+        self.next = next_
+        self.lhs = lhs
+        self.rhs = rhs
+        self.name = name
+        self.val = val
 
 
 def new_num(val: int) -> Node:
